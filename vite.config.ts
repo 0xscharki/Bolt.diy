@@ -25,6 +25,22 @@ export default defineConfig((config) => {
     },
     build: {
       target: 'esnext',
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: [
+              'react',
+              'react-dom',
+              '@remix-run/react',
+              'codemirror',
+              '@codemirror/lang-javascript'
+            ],
+            editor: ['./app/components/editor'],
+            terminal: ['./app/components/workbench/terminal']
+          }
+        }
+      },
+      chunkSizeWarningLimit: 1000
     },
     plugins: [
       nodePolyfills({
