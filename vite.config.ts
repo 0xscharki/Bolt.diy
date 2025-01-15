@@ -17,7 +17,7 @@ const getGitHash = () => {
 };
 
 
-export default defineConfig((config) => {
+export default defineConfig((config: { mode: string }) => {
   return {
     define: {
       __COMMIT_HASH: JSON.stringify(getGitHash()),
@@ -28,15 +28,9 @@ export default defineConfig((config) => {
       rollupOptions: {
         output: {
           manualChunks: {
-            vendor: [
-              'react',
-              'react-dom',
-              '@remix-run/react',
-              'codemirror',
-              '@codemirror/lang-javascript'
-            ],
+            vendor: ['react', 'react-dom', '@remix-run/react', 'codemirror', '@codemirror/lang-javascript'],
             editor: ['./app/components/editor'],
-            terminal: ['./app/components/workbench/terminal']
+            terminal: ['./app/components/workbench/terminal'],
           }
         }
       },
@@ -60,7 +54,13 @@ export default defineConfig((config) => {
       chrome129IssuePlugin(),
       config.mode === 'production' && optimizeCssModules({ apply: 'build' }),
     ],
-    envPrefix: ["VITE_","OPENAI_LIKE_API_BASE_URL", "OLLAMA_API_BASE_URL", "LMSTUDIO_API_BASE_URL","TOGETHER_API_BASE_URL"],
+    envPrefix: [
+      'VITE_',
+      'OPENAI_LIKE_API_BASE_URL',
+      'OLLAMA_API_BASE_URL',
+      'LMSTUDIO_API_BASE_URL',
+      'TOGETHER_API_BASE_URL',
+    ],
     css: {
       preprocessorOptions: {
         scss: {
@@ -71,11 +71,14 @@ export default defineConfig((config) => {
   };
 });
 
-function chrome129IssuePlugin() {
+function chrome129IssuePlugin(): {
+  name: string;
+  configureServer: (server: ViteDevServer) => void;
+} {
   return {
     name: 'chrome129IssuePlugin',
     configureServer(server: ViteDevServer) {
-      server.middlewares.use((req, res, next) => {
+      server.middlewares.use((req: import('http').IncomingMessage, res: import('http').ServerResponse, next: () => void) => {
         const raw = req.headers['user-agent']?.match(/Chrom(e|ium)\/([0-9]+)\./);
 
         if (raw) {
